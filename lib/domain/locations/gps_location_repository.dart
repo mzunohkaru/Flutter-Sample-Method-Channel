@@ -7,9 +7,7 @@ import './location_repository.dart';
 class GpsLocationRepository extends LocationRepository {
   static const platform = MethodChannel('com.example.method_channel_sample');
 
-  // 2) ここに後ほどEventChannelの処置を追加
-
-  /// 1) MethodChannelを使って位置情報を取得します。
+  /// MethodChannel
   @override
   Future<Location> get() async {
     final String result = await platform.invokeMethod('getLocation');
@@ -17,5 +15,31 @@ class GpsLocationRepository extends LocationRepository {
     return Location(double.parse(splitted[0]), double.parse(splitted[1]));
   }
 
-/// 2) EventChannelを使って位置情報を監視します。(後ほど追加)
+  /// EventChannel
+  static const eventChannel = EventChannel('com.example.method_channel_sample/location_stream');
+  StreamSubscription<dynamic>? _locationSubscription;
+  StreamController<Location>? _locationStreamController;
+
+  @override
+  Stream<Location> watch() {
+    if (_locationSubscription != null) {
+      return _locationStreamController!.stream;
+    }
+    _locationSubscription = eventChannel.receiveBroadcastStream().listen(
+      (event) {
+        final splitted = (event as String).split(',');
+        final location =
+            Location(double.parse(splitted[0]), double.parse(splitted[1]));
+        print("更新された位置情報: 緯度 ${location.latitude}, 経度 ${location.longitude}");
+        _locationStreamController!.add(location);
+      },
+      onError: (dynamic error) {
+        print('Received error: ${error.message}');
+      },
+    );
+    platform.invokeMethod('watchLocation');
+
+    _locationStreamController = StreamController<Location>();
+    return _locationStreamController!.stream;
+  }
 }

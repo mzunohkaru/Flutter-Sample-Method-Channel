@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/locations/location_repository_provider.dart';
-import '../../use_cases/locations/get_location_use_case.dart';
 import '../../domain/locations/location.dart';
+import '../../use_cases/locations/get_location_use_case.dart';
+import '../../use_cases/locations/watch_location_use_case.dart';
 import 'map_view.dart';
 
 class MapPage extends StatelessWidget {
@@ -12,12 +13,12 @@ class MapPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("真逆地図アプリ"),
+        title: const Text("ネイティブ連携"),
       ),
       // 1) 位置情報を一度だけ取得します。
-      body: const _Body1(),
+      // body: const _Body1(),
       // 2) 位置情報を常に更新できるようにします。
-      //body: const _Body2(),
+      body: const _Body2(),
     );
   }
 }
@@ -33,7 +34,7 @@ class _Body1 extends ConsumerWidget {
       AsyncData(:final value) => _Main(
         location: value,
       ),
-      AsyncError(:final error) => Center(
+      AsyncError(:final error, :final stackTrace) => Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -102,3 +103,38 @@ class _Main extends StatelessWidget {
   }
 }
 
+class _Body2 extends ConsumerWidget {
+  const _Body2();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    /// 2) 位置情報を常に更新できるようにします。
+    final location = ref.watch(watchLocationUseCaseProvider);
+
+
+
+    return switch (location) {
+      AsyncData(:final value) => _Main(
+        location: value,
+      ),
+      AsyncError(:final error, :final stackTrace) => Center(
+        // child: Text("読み込みエラー"),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("読み込みエラー： $error"),
+            ElevatedButton(//ユーザーが位置情報を許容した後のリトライボタン
+              onPressed: () {
+                ref.refresh(getLocationUseCaseProvider);
+              },
+              child: Text('再試行'),
+            ),
+          ],
+        ),
+      ),
+      _ => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    };
+  }
+}
