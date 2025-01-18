@@ -1,16 +1,28 @@
-# method_channel_sample
+##【ネイティブ側(iOS)の実装】
 
-A new Flutter project.
+次の設定ファイルとソースコードを修正します。
+--------------------------------------------------------------------------
+iOS(ネイティブ)側のコード
+ios
+└── Runner
+    ├── Info.plist
+    └── AppDelegate.swift (連携メイン)
+--------------------------------------------------------------------------
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+##【ネイティブ側(Android)の実装】
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+次の設定ファイルとソースコードを修正します。
+--------------------------------------------------------------------------
+Android(ネイティブ)側のコード
+android
+└── app
+    └── src
+        └── main
+            ├── AndroidManifest.xml
+            └── kotlin
+                └── com
+                    └── example
+                        └── multios
+                            └── MainActivity.kt (連携メイン)
+--------------------------------------------------------------------------
