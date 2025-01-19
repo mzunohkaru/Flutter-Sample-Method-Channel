@@ -22,6 +22,8 @@ import CoreLocation
         locationManager.requestWhenInUseAuthorization()
         
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
+
+        /// 注意：com.example.method_channel_sample は、MethodChannelのチャンネル名です。
         locationChannel = FlutterMethodChannel(name: "com.example.method_channel_sample",
                                                binaryMessenger: controller.binaryMessenger)
         locationChannel?.setMethodCallHandler({
@@ -35,10 +37,9 @@ import CoreLocation
             }
         })
         
-        // 問題！！！
+        /// 注意：com.example.method_channel_sample/location_stream は、EventChannelのチャンネル名です。
         eventChannel = FlutterEventChannel(name: "com.example.method_channel_sample/location_stream", binaryMessenger: controller.binaryMessenger)
         eventChannel?.setStreamHandler(self)
-        
         
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
