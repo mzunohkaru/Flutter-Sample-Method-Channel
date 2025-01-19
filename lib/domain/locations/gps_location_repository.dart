@@ -16,7 +16,7 @@ class GpsLocationRepository extends LocationRepository {
   }
 
   /// EventChannel
-  static const eventChannel = EventChannel('com.example.method_channel_sample/location_stream');
+  static const eventChannel = EventChannel('com.example.event_channel_sample');
   StreamSubscription<dynamic>? _locationSubscription;
   StreamController<Location>? _locationStreamController;
 
