@@ -1,9 +1,8 @@
-import 'location.dart';
+import '../../model/location.dart';
 
-export 'location.dart';
+export '../../model/location.dart';
 
 abstract class LocationRepository {
   Future<Location> get();
-
   Stream<Location> watch();
 }

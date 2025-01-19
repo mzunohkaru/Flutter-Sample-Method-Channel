@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import './location_repository.dart';
 
@@ -30,11 +31,11 @@ class GpsLocationRepository extends LocationRepository {
         final splitted = (event as String).split(',');
         final location =
             Location(double.parse(splitted[0]), double.parse(splitted[1]));
-        print("更新された位置情報: 緯度 ${location.latitude}, 経度 ${location.longitude}");
+        debugPrint("更新された位置情報: 緯度 ${location.latitude}, 経度 ${location.longitude}");
         _locationStreamController!.add(location);
       },
       onError: (dynamic error) {
-        print('Received error: ${error.message}');
+        debugPrint('Received error: ${error.message}');
       },
     );
     platform.invokeMethod('watchLocation');
