@@ -16,15 +16,15 @@ class MapPage extends StatelessWidget {
         title: const Text("ネイティブ連携"),
       ),
       // 1) 位置情報を一度だけ取得します。
-      // body: const _Body1(),
+      // body: const _MethodChannelBody(),
       // 2) 位置情報を常に更新できるようにします。
-      body: const _Body2(),
+      body: const _EventChannelBody(),
     );
   }
 }
 
-class _Body1 extends ConsumerWidget {
-  const _Body1();
+class _MethodChannelBody extends ConsumerWidget {
+  const _MethodChannelBody();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -58,7 +58,6 @@ class _Body1 extends ConsumerWidget {
 class _Main extends StatelessWidget {
   const _Main({
     required this.location,
-    super.key,
   });
 
   final Location location;
@@ -103,8 +102,8 @@ class _Main extends StatelessWidget {
   }
 }
 
-class _Body2 extends ConsumerWidget {
-  const _Body2();
+class _EventChannelBody extends ConsumerWidget {
+  const _EventChannelBody();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
