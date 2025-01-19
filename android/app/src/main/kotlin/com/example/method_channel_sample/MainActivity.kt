@@ -14,38 +14,53 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 
-
 class MainActivity: FlutterActivity() {
-    // 追加
-    private val CHANNEL = "com.example.multios/location"
 
-    // 2) 追加
-//    var locationListener: LocationListener? = null
+    private val CHANNEL = "com.example.method_channel_sample"
+
+    var locationListener: LocationListener? = null
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-        // 1) 追加
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler {
                 call, result ->
             if (call.method == "getLocation") {
-                val location = getLocation() // 実際の位置情報取得ロジックを実装
+                val location = getLocation()
                 if (location.isEmpty()) {
                     result.error("UNAVAILABLE", "Location not available.", null)
                 } else {
                     result.success(location)
                 }
-            }
-            // 2) 追加
-            else {
+            } else if (call.method == "watchLocation") {
+                if (watchLocation()) {
+                    result.success(true)
+                } else {
+                    result.error("UNAVAILABLE", "Location not available.", null)
+                }
+            } else {
                 result.notImplemented()
             }
         }
 
-        // 2) 追加
+        EventChannel(flutterEngine.dartExecutor.binaryMessenger, "com.example.event_channel_sample").setStreamHandler(
+            object : EventChannel.StreamHandler {
+
+                override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+                    locationListener = LocationListener { location ->
+                        events?.success("${location.latitude},${location.longitude}")
+                    }
+                }
+
+                override fun onCancel(arguments: Any?) {
+                    // 位置情報の更新を停止するロジックを実装
+                }
+            }
+        )
+
     }
 
-    // 1) 位置情報取得ロジック
+    // 位置情報取得ロジック
     private fun getLocation(): String {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
@@ -61,5 +76,15 @@ class MainActivity: FlutterActivity() {
         }
     }
 
-// 2) 位置情報の更新を開始するロジックを実装
+    // 位置情報の更新を開始するロジックを実装
+    private fun watchLocation(): Boolean {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
+            return false
+        }
+
+        val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 0f, locationListener!!)
+        return true
+    }
 }
